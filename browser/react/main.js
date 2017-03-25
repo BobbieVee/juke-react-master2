@@ -72,16 +72,7 @@ export default class Main extends React.Component  {
 		return(
 			<div id="main" className="container-fluid">
 				< Sidebar />
-					<div className="col-xs-10">
-					  <h3>Albums</h3>
-					  <div className="row">
-					  {
-					  	this.state.albums.map((album)=>{
-					  		return (<Album key={album.id} album={album}/>)
-					  	})
-					  }
-					  </div>
-					</div>	
+				< Albums albums={this.state.albums} />	
 				< Footer />	
 			</div>
 		)
