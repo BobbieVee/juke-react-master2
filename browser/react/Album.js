@@ -5,7 +5,7 @@ export default class Album extends React.Component {
 		const album = this.props.album;
 		return	(
 			<div  className="col-xs-4">
-	     	 <a className="thumbnail" href="#">
+	     	 <a className="thumbnail" onClick={this.props.onClick} href="#">
 		        <img src={album.imageUrl} />
 		        <div  className="caption">
 		          <h5>
