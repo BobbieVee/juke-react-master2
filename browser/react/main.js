@@ -6,17 +6,28 @@ import Footer from './Footer';
 import Album from './Album';
 import Albums from './Albums';
 import SingleAlbum from './SingleAlbum';
+
+const audio = document.createElement('audio');
 	
 export default class Main extends React.Component  {
 	constructor(props) {
 		super(props);
-		this.handleClick = this.handleClick.bind(this);		
+		this.handleClick = this.handleClick.bind(this);	
+		this.returnToList = this.returnToList.bind(this);
+		this.togglePlay = this.togglePlay.bind(this);
+		this.start = this.start.bind(this);	
 		this.state = {
 			albums: [],
-			selectedAlbum: {songs: []}
+			selectedAlbum: {songs: []},
+			currentSong: {name: null},
+			play: false
 		};
-
 	}
+
+	returnToList(){
+		this.setState({selectedAlbum: {songs: []}})
+	} 
+
 	componentWillMount(){
 		axios.get('/api/albums')
 		.then((response) => response.data)
@@ -39,30 +50,50 @@ export default class Main extends React.Component  {
 		})
 	}
 
+	list(){
+		return(
+			<div>
+			  <h3>Albums</h3>
+			  <div className="row">
+				  {
+				  	this.state.albums.map((album)=>{
+				  		return (<Album key={album.id} album={album} onClick={()=>this.handleClick(album)}/>)
+				  	})
+				  }
+			  </div>
+		  	</div>
+		)
+	}
+
+	detail(){
+		return(
+			<div>
+	  			<SingleAlbum album={this.state.selectedAlbum} currentSong={this.state.currentSong} start={this.start}/>
+  			</div>
+		)
+	}
+
+	start(song){
+		console.log('songId = ', song);
+		this.setState({currentSong: song, play: true});
+		audio.src = `/api/songs/${song.id}/audio`
+		audio.play();
+	}
+
+	togglePlay(){
+		let play =  this.state.play;
+		this.setState({play: !play});
+		play? audio.pause():audio.play();
+	}	
+
 	render(){
 		return(
 			<div id="main" className="container-fluid">
-				< Sidebar />
+				< Sidebar onClick={()=> this.returnToList()}/>
 				<div className="album col-xs-10">
-				{this.state.selectedAlbum.id ? "selected Album" : "list" }
-
-
-				
-					<div>
-					  <h3>Albums</h3>
-					  <div className="row">
-						  {
-						  	this.state.albums.map((album)=>{
-						  		return (<Album key={album.id} album={album} onClick={()=>this.handleClick(album)}/>)
-						  	})
-						  }
-					  </div>
-				  	</div>
-				  	<div>					
-			  			<SingleAlbum album={this.state.selectedAlbum}/>
-		  			</div>
+					{this.state.selectedAlbum.id ? this.detail() : this.list() }
 				</div>	
-				< Footer />	
+				< Footer currentSong={this.state.currentSong} play={this.state.play} togglePlay={this.togglePlay}/>	
 			</div>
 		)
 	}
