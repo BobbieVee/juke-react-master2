@@ -1,11 +1,8 @@
 import React from 'react';
 import axios from "axios";
 
-import Sidebar from './SideBar';
-import Footer from './Footer';
-import Album from './Album';
-import Albums from './Albums';
-import SingleAlbum from './SingleAlbum';
+
+import Juke from './juke';
 
 const audio = document.createElement('audio');
 	
@@ -65,28 +62,7 @@ export default class Main extends React.Component  {
 		})
 	}
 
-	list(){
-		return(
-			<div>
-			  <h3>Albums</h3>
-			  <div className="row">
-				  {
-				  	this.state.albums.map((album)=>{
-				  		return (<Album key={album.id} album={album} onClick={()=>this.handleClick(album)}/>)
-				  	})
-				  }
-			  </div>
-		  	</div>
-		)
-	}
-
-	detail(){
-		return(
-			<div>
-	  			<SingleAlbum album={this.state.selectedAlbum} currentSong={this.state.currentSong} start={this.start} />
-  			</div>
-		)
-	}
+	
 
 	start(song, index){
 		this.setState({currentSong: song, play: true, index: index});
@@ -95,18 +71,21 @@ export default class Main extends React.Component  {
 	}
 
 	nextSong(){
-		let albumLastSongIndex = this.state.selectedAlbum.songs.length-1;
-		let newIndex = this.state.index === albumLastSongIndex? 0 : this.state.index+1
-		let newSong = this.state.selectedAlbum.songs[newIndex];
-		this.start(newSong, newIndex);
+		if (this.state.selectedAlbum.id){
+			let albumLastSongIndex = this.state.selectedAlbum.songs.length-1;
+			let newIndex = this.state.index === albumLastSongIndex? 0 : this.state.index+1
+			let newSong = this.state.selectedAlbum.songs[newIndex];
+			this.start(newSong, newIndex);
+		}
 	}
 
 	lastSong(){
-		let albumLastSongIndex = this.state.selectedAlbum.songs.length-1;
-		let newIndex = this.state.index === 0 ? albumLastSongIndex : this.state.index-1
-		let newSong = this.state.selectedAlbum.songs[newIndex];
-		this.start(newSong, newIndex);
-
+		if (this.state.selectedAlbum.id){
+			let albumLastSongIndex = this.state.selectedAlbum.songs.length-1;
+			let newIndex = this.state.index === 0 ? albumLastSongIndex : this.state.index-1
+			let newSong = this.state.selectedAlbum.songs[newIndex];
+			this.start(newSong, newIndex);
+		}
 	}
 
 	togglePlay(){
@@ -117,13 +96,21 @@ export default class Main extends React.Component  {
 
 	render(){
 		return(
-			<div id="main" className="container-fluid">
-				< Sidebar onClick={()=> this.returnToList()}/>
-				<div className="album col-xs-10">
-					{this.state.selectedAlbum.id ? this.detail() : this.list() }
-				</div>	
-				< Footer currentSong={this.state.currentSong} play={this.state.play} togglePlay={this.togglePlay} lastSong={this.lastSong} nextSong={this.nextSong} progress={this.state.progress}/>	
-			</div>
+			<div id='juke'>
+				<Juke 
+					currentSong={this.state.currentSong} 
+					start={this.start} 
+					play={this.state.play} 
+					togglePlay={this.togglePlay} 	
+					lastSong={this.lastSong} 
+					nextSong={this.nextSong} 
+					progress={this.state.progress} 
+					selectedAlbum={this.state.selectedAlbum} 
+					albums={this.state.albums} 
+					handleClick={this.handleClick} 
+					returnToList={this.returnToList}
+				/>
+			</div>	
 		)
 	}
 }	
