@@ -7,13 +7,13 @@ export default class Footer extends React.Component {
 				<footer>
 					{this.props.currentSong.id ? 
 				        <div className="pull-left">
-				          <button className="btn btn-default">
+				          <button onClick={()=> this.props.lastSong()} className="btn btn-default">
 				            <span className="glyphicon glyphicon-step-backward"></span>
 				          </button>
 				          <button onClick={()=> this.props.togglePlay(this.props.play)} className="btn btn-default">
 				            <span className={this.props.play? "glyphicon glyphicon-pause": "glyphicon glyphicon-play"}></span>
 				          </button>
-				          <button className="btn btn-default">
+				          <button onClick={()=> this.props.nextSong()} className="btn btn-default">
 				            <span className="glyphicon glyphicon-step-forward"></span>
 				          </button>
 			        </div>

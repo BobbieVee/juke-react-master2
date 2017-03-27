@@ -24,13 +24,13 @@ export default class SingleAlbum extends React.Component {
 					</thead>
 					<tbody>
 					{
-						this.props.album.songs.map((song)=>{
+						this.props.album.songs.map((song, index)=>{
 							// console.log('song = ', song)
 							return (
 								<tr key={song.id} className={currentSong.name === song.name ?'active': ''}>
 								    <td>
 								    {currentSong.name !== song.name ?  
-								      <button className="btn btn-default btn-xs" onClick={()=>this.props.start(song)}>
+								      <button className="btn btn-default btn-xs" onClick={()=>this.props.start(song, index)}>
 								        <span className="glyphicon glyphicon-play"></span>
 								      </button>
 								    : ''	  

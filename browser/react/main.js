@@ -15,12 +15,15 @@ export default class Main extends React.Component  {
 		this.handleClick = this.handleClick.bind(this);	
 		this.returnToList = this.returnToList.bind(this);
 		this.togglePlay = this.togglePlay.bind(this);
+		this.nextSong = this.nextSong.bind(this);
+		this.lastSong = this.lastSong.bind(this);
 		this.start = this.start.bind(this);	
 		this.state = {
 			albums: [],
 			selectedAlbum: {songs: []},
 			currentSong: {name: null},
-			play: false
+			play: false,
+			index: -1
 		};
 	}
 
@@ -39,6 +42,12 @@ export default class Main extends React.Component  {
 			this.setState({albums: allAlbums})
 		})
 		.catch(e => console.log(e));
+	}
+
+	componentDidMount(){
+		audio.addEventListener('ended', ()=> {
+			this.nextSong() 
+		});
 	}
 
 	handleClick(album){
@@ -68,23 +77,39 @@ export default class Main extends React.Component  {
 	detail(){
 		return(
 			<div>
-	  			<SingleAlbum album={this.state.selectedAlbum} currentSong={this.state.currentSong} start={this.start}/>
+	  			<SingleAlbum album={this.state.selectedAlbum} currentSong={this.state.currentSong} start={this.start} />
   			</div>
 		)
 	}
 
-	start(song){
+	start(song, index){
 		console.log('songId = ', song);
-		this.setState({currentSong: song, play: true});
+		console.log('index = ', index)
+		this.setState({currentSong: song, play: true, index: index});
 		audio.src = `/api/songs/${song.id}/audio`
 		audio.play();
 	}
 
+	nextSong(){
+		let albumLastSongIndex = this.state.selectedAlbum.songs.length-1;
+		let newIndex = this.state.index === albumLastSongIndex? 0 : this.state.index+1
+		let newSong = this.state.selectedAlbum.songs[newIndex];
+		this.start(newSong, newIndex);
+	}
+
+	lastSong(){
+		let albumLastSongIndex = this.state.selectedAlbum.songs.length-1;
+		let newIndex = this.state.index === 0 ? albumLastSongIndex : this.state.index-1
+		let newSong = this.state.selectedAlbum.songs[newIndex];
+		this.start(newSong, newIndex);
+
+	}
+
 	togglePlay(){
 		let play =  this.state.play;
-		this.setState({play: !play});
 		play? audio.pause():audio.play();
-	}	
+		this.setState({play: !play});
+	}
 
 	render(){
 		return(
@@ -93,7 +118,7 @@ export default class Main extends React.Component  {
 				<div className="album col-xs-10">
 					{this.state.selectedAlbum.id ? this.detail() : this.list() }
 				</div>	
-				< Footer currentSong={this.state.currentSong} play={this.state.play} togglePlay={this.togglePlay}/>	
+				< Footer currentSong={this.state.currentSong} play={this.state.play} togglePlay={this.togglePlay} lastSong={this.lastSong} nextSong={this.nextSong}/>	
 			</div>
 		)
 	}
