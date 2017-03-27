@@ -23,7 +23,8 @@ export default class Main extends React.Component  {
 			selectedAlbum: {songs: []},
 			currentSong: {name: null},
 			play: false,
-			index: -1
+			index: -1,
+			progress: 0
 		};
 	}
 
@@ -47,6 +48,11 @@ export default class Main extends React.Component  {
 	componentDidMount(){
 		audio.addEventListener('ended', ()=> {
 			this.nextSong() 
+		});
+		audio.addEventListener('timeupdate', ()=>{
+			this.setState({
+				progress: 100 * audio.currentTime/audio.duration
+			})
 		});
 	}
 
@@ -83,8 +89,6 @@ export default class Main extends React.Component  {
 	}
 
 	start(song, index){
-		console.log('songId = ', song);
-		console.log('index = ', index)
 		this.setState({currentSong: song, play: true, index: index});
 		audio.src = `/api/songs/${song.id}/audio`
 		audio.play();
@@ -118,7 +122,7 @@ export default class Main extends React.Component  {
 				<div className="album col-xs-10">
 					{this.state.selectedAlbum.id ? this.detail() : this.list() }
 				</div>	
-				< Footer currentSong={this.state.currentSong} play={this.state.play} togglePlay={this.togglePlay} lastSong={this.lastSong} nextSong={this.nextSong}/>	
+				< Footer currentSong={this.state.currentSong} play={this.state.play} togglePlay={this.togglePlay} lastSong={this.lastSong} nextSong={this.nextSong} progress={this.state.progress}/>	
 			</div>
 		)
 	}
